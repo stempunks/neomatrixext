@@ -1,0 +1,38 @@
+{
+    "name": "Neo Matrix",
+    "version": "0.1.2",
+    "description": "Extension for Neopixel 8x8 Matrix",
+    "license": "MIT",
+    "dependencies": {
+        "core": "*",
+        "radio": "*",
+        "neopixel": "github:microsoft/pxt-neopixel#v0.7.5"
+    },
+    "files": [
+        "README.md",
+        "ines-led-matrix.ts",
+        "enums.ts",
+        "matrix-lut.ts",
+        "_locales/de/luma-matrix-strings.json",
+        "_locales/de/luma-matrix-jsdoc-strings.json",
+        "wordclock.ts",
+        "snake-game.ts",
+        "tetris-mini-game.ts",
+        "rf-messages.ts"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "targetVersions": {
+        "target": "7.0.61",
+        "targetId": "microbit"
+    },
+    "supportedTargets": [
+        "microbit"
+    ],
+    "preferredEditor": "tsprj",
+    "icon": "icon.png",
+    "disablesVariants": [
+        "mbdal"
+    ]
+}

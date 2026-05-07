@@ -33,7 +33,6 @@ namespace lumaMatrix {
     let pinDownButton: DigitalPin = DigitalPin.P2;
     let pinRightButton: DigitalPin = DigitalPin.P7;
     let pinLeftButton: DigitalPin = DigitalPin.P12;
-    let counter = 0;
     let lastSwitchValue = readSwitch(); // used for switchValueChanged
     let lastJoystickDirection: eJoystickDirection = eJoystickDirection.NotPressed; // used for joystickDirectionChanged
     let result: number[][] = [];
@@ -66,18 +65,6 @@ namespace lumaMatrix {
         }
 
         return result;
-    }
-
-    /**
-     * Enable serial messages for debugging printed by the Luma Matrix extension.
-     */
-    //% blockId="ZHAW_Debug_Enable"
-    //% blockHidden=true
-    //% block="set serial debugging prints to $enable"
-    //% enable.shadow="toggleOnOff"
-    //% advanced=true group="Debug"
-    export function debugEnable(enable: boolean): void {
-        debugEnabled = enable;
     }
 
     export function serialDebugMsg(message: string): void {
@@ -213,45 +200,6 @@ namespace lumaMatrix {
         pins.setPull(pinDownButton, PinPullMode.PullUp);
         pins.setPull(pinRightButton, PinPullMode.PullUp);
         pins.setPull(pinLeftButton, PinPullMode.PullUp);
-        serialDebugMsg("initializeMatrixInterface: pinSwitch: " + pinSwitch + ", pinCenterButton:" + pinCenterButton + ", pinUpButton: " + pinUpButton + ", pinDownButton: " + pinDownButton + ", pinRightButton:" + pinRightButton + ", pinLeftButton: " + pinLeftButton);
-    }
-
-    /**
-     * set custom gpio pins for the input devices. 
-     * Note: Initialize matrix first
-     * @param pinSwitchTemp is the GPIO pin for the switch
-     * @param pinCenterButtonTemp is the GPIO pin for the center button of the joystick
-     * @param pinUpButtonTemp is the GPIO pin for the up button of the joystick
-     * @param pinDownButtonTemp is the GPIO pin for the down button of the joystick
-     * @param pinRightButtonTemp is the GPIO pin for the right button of the joystick
-     * @param pinLeftButtonTemp is the GPIO pin for the left button of the joystick
-     */
-    //% blockId="ZHAW_Matrix_InitExpert"
-    //% blockHidden=true
-    //% block="customize input pins (expert). \nswitch pin $pinSwitchTemp \ncenter button pin $pinCenterButtonTemp \nup button pin $pinUpButtonTemp \ndown button pin $pinDownButtonTemp \nright button pin $pinRightButtonTemp \nleft button pin $pinLeftButtonTemp"
-    //% advanced=true group="Debug"
-    export function initializeMatrixInterfaceExpert(
-        pinSwitchTemp: DigitalPin,
-        pinCenterButtonTemp: DigitalPin,
-        pinUpButtonTemp: DigitalPin,
-        pinDownButtonTemp: DigitalPin,
-        pinRightButtonTemp: DigitalPin,
-        pinLeftButtonTemp: DigitalPin
-    ): void {
-        pinSwitch = pinSwitchTemp;
-        pinCenterButton = pinCenterButtonTemp;
-        pinUpButton = pinUpButtonTemp;
-        pinDownButton = pinDownButtonTemp;
-        pinRightButton = pinRightButtonTemp;
-        pinLeftButton = pinLeftButtonTemp;
-
-        pins.setPull(pinSwitch, PinPullMode.PullUp);
-        pins.setPull(pinCenterButton, PinPullMode.PullUp);
-        pins.setPull(pinUpButton, PinPullMode.PullUp);
-        pins.setPull(pinDownButton, PinPullMode.PullUp);
-        pins.setPull(pinRightButton, PinPullMode.PullUp);
-        pins.setPull(pinLeftButton, PinPullMode.PullUp);
-        basic.pause(5); // Wait 5ms for pull-up to take effect
         serialDebugMsg("initializeMatrixInterface: pinSwitch: " + pinSwitch + ", pinCenterButton:" + pinCenterButton + ", pinUpButton: " + pinUpButton + ", pinDownButton: " + pinDownButton + ", pinRightButton:" + pinRightButton + ", pinLeftButton: " + pinLeftButton);
     }
 
@@ -437,179 +385,6 @@ namespace lumaMatrix {
         return img;
     }
 
-
-    /**
-     * Get a representation of which pixels are turned on based on input coordinates. 
-     * Only bitmap is available without colour information.
-     */
-    //% blockId="ZHAW_Matrix_GetImageFromCoordinates"
-    //% blockHidden=true
-    //% block="image from $pixels"
-    //% group="Pixels" weight=106 advanced=true
-    export function getImageFromCoordinates(pixels: number[][]): Image {
-        let img = images.createImage(`
-        . . . . . . . .
-        . . . . . . . .
-        . . . . . . . .
-        . . . . . . . .
-        . . . . . . . .
-        . . . . . . . .
-        . . . . . . . .
-        . . . . . . . .
-    `); // Initialize an 8x8 image
-
-        try {
-            let imagewidth = img.width();
-            let imageheight = img.height();
-
-            for (let i=0; i<pixels.length; i++){
-                img.setPixel(pixels[i][0] % imagewidth, pixels[i][1] % imageheight, true); // Set the pixel if the coordinate is present
-                /*for (let y = 0; y < imageheight; y++) {
-                    for (let x = 0; x < imagewidth; x++) {
-                        let index = (matrixHeight - 1 - y) * matrixWidth + x;
-                        if (x == pixels[i][0] && y == pixels[i][1]) {
-                            img.setPixel(x, y, true); // Set the pixel if the coordinate is present
-                        } else {
-                            img.setPixel(x, y, false); // Clear the pixel if the bit is 0
-                        }
-                    }
-                }*/
-            }
-        } catch (e) {
-            console.log(`bufferToBitmap error: ${e}`);
-        }
-
-        return img;
-    }
-
-    /**
-     * Get the buffer with stored colours for each pixel. Each pixel uses 3 bytes in order red, green, blue.
-     */
-    //% blockId="ZHAW_Matrix_GetPixelBuffer"
-    //% blockHidden=true
-    //% block="pixel buffer"
-    //% group="Pixels" weight=106
-    export function getPixelBuffer(): Buffer {
-        return pixelBuffer
-    }
-
-    /**
-     * Write a buffer full of colours to the matrix. Color must be split into 3 successive bytes following order red, green, blue.
-     */
-    //% blockId="ZHAW_Matrix_ApplyPixelBuffer"
-    //% blockHidden=true
-    //% block="apply pixel buffer $buf"
-    //% buf.shadow="ZHAW_Matrix_GetPixelBuffer"
-    //% group="Pixels" weight=106
-    export function applyPixelBuffer(buf: Buffer) {
-        const dataLen = buf.length;
-
-        // Ensure buffer length is a multiple of 3
-        if (dataLen % 3 !== 0) {
-            serialDebugMsg("Error: Buffer length " + dataLen + " is not a multiple of 3.");
-            return;
-        }
-        if (dataLen < 192) {
-            serialDebugMsg("Error: Buffer length " + dataLen + " to small.");
-            return;
-        }
-
-        serialDebugMsg("Applying " + dataLen + " bytes ");
-
-        for (let i = 0; i < dataLen; i += 3) {
-            const pixelIndex = Math.floor(i / 3);
-            let x = pixelIndex % matrixWidth;
-            let y = matrixHeight - 1 - Math.floor(pixelIndex / matrixWidth);
-
-            // Safely pack the color from the buffer
-            if (i + 2 < dataLen) {
-                const r = buf.getUint8(i + 0);
-                const g = buf.getUint8(i + 1);
-                const b = buf.getUint8(i + 2);
-                const color = (r << 16) | (g << 8) | b;
-                setOnePixel(x, y, color);
-            } else {
-                serialDebugMsg("Error: Incomplete RGB triplet at buffer index " + i);
-            }
-        }
-    }
-
-    /**
-     * Get the colour of the pixel at coordinate (x,y)
-     */
-    //% blockId="ZHAW_Matrix_GetPixelRGB"
-    //% blockHidden=true
-    //% block="colour at pixel x $x y $y"
-    //% x.min=0 x.max=7 y.min=0 y.max=7
-    //% group="Pixels" weight=106
-    export function getColorFromPixel(x: number, y: number): number {
-        let color = 0x000000;
-        let index = (matrixHeight - 1 - y) * matrixWidth + x;
-        if (x >= 0 && x < matrixWidth && y >= 0 && y < matrixHeight) {
-            color |= pixelBuffer.getUint8(index * 3 + 0) << 16;
-            color |= pixelBuffer.getUint8(index * 3 + 1) << 8;
-            color |= pixelBuffer.getUint8(index * 3 + 2) << 0;
-            serialDebugMsg("color is" + color)
-        }
-        return color
-    }
-
-
-    /**
-     * Increase the colour intensity of pixel (x,y) with given colours red, green and blue. 
-     * Previously applied color value is considered.
-     * Intensity will not go above 255.
-     */
-    //% blockId="ZHAW_Matrix_AddPixelRGB"
-    //% blockHidden=true
-    //% block="add red $R green $G blue $B to pixel at x $x y $y"
-    //% x.min=0 x.max=7 y.min=0 y.max=7
-    //% R.min=0 R.max=255 G.min=0 G.max=255 B.min=0 B.max=255
-    //% group="Pixels" advanced=true
-    //% blockExternalInputs=true
-    export function addColorToPixel(x: number, y: number, R: number, G: number, B: number) {
-        let index = (matrixHeight - 1 - y) * matrixWidth + x;
-        if (x >= 0 && x < matrixWidth && y >= 0 && y < matrixHeight) {
-            R = Math.max(0, Math.min(255, pixelBuffer.getUint8(index * 3 + 0) + R));
-            G = Math.max(0, Math.min(255, pixelBuffer.getUint8(index * 3 + 1) + G));
-            B = Math.max(0, Math.min(255, pixelBuffer.getUint8(index * 3 + 2) + B));
-        }
-        setOnePixelRGB(x, y, R, G, B);
-    }
-
-
-    /**
-     * Decrease the colour intensity of pixel (x,y) with given colours red, green and blue. 
-     * Previously applied color value is considered.
-     * Intensity will not go below 0.
-     */
-    //% blockId="ZHAW_Matrix_SubtractPixelRGB"
-    //% blockHidden=true
-    //% block="subtract red $R green $G blue $B from pixel at x $x y $y"
-    //% x.min=0 x.max=7 y.min=0 y.max=7
-    //% R.min=0 R.max=255 G.min=0 G.max=255 B.min=0 B.max=255
-    //% group="Pixels" advanced=true
-    //% blockExternalInputs=true
-    export function subtractColorFromPixel(x: number, y: number, R: number, G: number, B: number) {
-        let index = (matrixHeight - 1 - y) * matrixWidth + x;
-        if (x >= 0 && x < matrixWidth && y >= 0 && y < matrixHeight) {
-            R = Math.max(0, Math.min(255, pixelBuffer.getUint8(index * 3 + 0) - R));
-            G = Math.max(0, Math.min(255, pixelBuffer.getUint8(index * 3 + 1) - G));
-            B = Math.max(0, Math.min(255, pixelBuffer.getUint8(index * 3 + 2) - B));
-        }
-        setOnePixelRGB(x, y, R, G, B);
-    }
-
-    //% blockId="ZHAW_Input_GPIORead"
-    //% block="GPIO $pin"
-    //% blockHidden=true // Function not really needed, just for debugging
-    //% subcategory="Input"
-    export function readGPIO(pin: DigitalPin): number { 
-        let value = pins.analogReadPin(pin);
-        serialDebugMsg("readGPIO: GPIO: " + pin + " Value: " + value);
-        return value;
-    }
-
     /**
      * Read Luma Matrix switch position
      */
@@ -728,33 +503,6 @@ namespace lumaMatrix {
                     lastJoystickDirection = currentJoystickDirection;
                     serialDebugMsg("joystickChangedThread: Joystick direction changed to: " + currentJoystickDirection);
                     callback(currentJoystickDirection);
-                }
-                basic.pause(pollingInterval);
-            }
-        });
-    }
-
-    /**
-     * Creates thread to poll joystick direction and execute callback when specified direction happens. 
-    */
-    //% blockId="ZHAW_Input_JoystickCallbackDir"
-    //% block="when joystick direction is %direction"
-    //% direction.defl=lumaMatrix.eJoystickDirection.Center
-    //% subcategory="Input"
-    // TODO #BUG when using multiple joystickDirectionThread blocks and the callback function do not finish before executing the other joystickDirectionThread block, microbit crashes.
-    export function joystickDirectionThread(direction: eJoystickDirection, callback: () => void): void {
-        serialDebugMsg("joystickDirectionThread: Selected trigger direction: " + direction);
-        basic.pause(getRandomInt(1, 100)); // Wait 1 to 100ms to asynchron threads
-        control.inBackground(() => {
-            let lastJoystickDirectionLocal: eJoystickDirection = eJoystickDirection.NotPressed; // Local state variable
-            let currentJoystickDirection: eJoystickDirection = 0;
-            while (true) {
-                currentJoystickDirection = readJoystick();
-                if (lastJoystickDirectionLocal !== currentJoystickDirection && direction === currentJoystickDirection) {
-                    serialDebugMsg("joystickDirectionThread: Joystick direction: " + currentJoystickDirection);
-                    callback();
-                } else {
-                    lastJoystickDirectionLocal = currentJoystickDirection;
                 }
                 basic.pause(pollingInterval);
             }
@@ -1011,120 +759,6 @@ namespace lumaMatrix {
 
         //serialDebugMsg("getTextArray: Successfully created text array");
         return finalResult;
-    }
-    
-
-    
-    /**
-     * Defined test sequence which checks every aspect of the hardware. 
-     */
-    //% blockId="ZHAW_Debug_MatrixHardware"
-    //% blockHidden=true
-    //% block="test LED matrix hardware"
-    //% advanced=true group="Debug"
-    export function testLedMatrixHW(): void {
-        let oldBrightness: number = currentBrightness
-
-        /* Test LED Matrix */
-        basic.showString("LED TEST");
-        // scrollText("LED TEST", neopixel.colors(NeoPixelColors.White), 90);
-        serialDebugMsg("testLedMatrix: Start testing LED matrix pixels");
-        let colorRed = neopixel.rgb(255, 0, 0);
-        let colorGreen = neopixel.rgb(0, 255, 0);
-        let colorBlue = neopixel.rgb(0, 0, 255);
-        setBrightness(255);
-        clear();
-        for (let y = 0; y < matrixHeight; y++) {
-            for (let x = 0; x < matrixWidth; x++) {
-                setPixel(x, y, colorGreen);
-            }
-        }
-        strip.show();
-        basic.pause(2000);
-        clear();
-        for (let y = 0; y < matrixHeight; y++) {
-            for (let x = 0; x < matrixWidth; x++) {
-                setPixel(x, y, colorRed);
-            }
-        }
-        strip.show();
-        basic.pause(2000);
-        clear();
-        for (let y = 0; y < matrixHeight; y++) {
-            for (let x = 0; x < matrixWidth; x++) {
-                setPixel(x, y, colorBlue);
-            }
-        }
-        strip.show();
-        basic.pause(2000);
-        clear();
-        setBrightness(oldBrightness);
-        serialDebugMsg("testLedMatrix: Finished testing LED matrix pixels");
-
-        /* Test Switch */
-        basic.showString("MOVE SLIDER");
-        // scrollText("MOVE SLIDER", neopixel.colors(NeoPixelColors.White), 90);
-        serialDebugMsg("testLedMatrix: Start testing LED matrix switch");
-        /* Set the first pixel to blue during the test. */
-        setPixel(0, 0, colorBlue);
-        strip.show();
-        while (0 !== readSwitch()) {
-            basic.pause(pollingInterval);
-        }
-        while (1 !== readSwitch()) {
-            basic.pause(pollingInterval);
-        }
-        while (0 !== readSwitch()) {
-            basic.pause(pollingInterval);
-        }
-        /* Set the first pixel to green when the test passed. */
-        setPixel(0, 0, colorGreen);
-        strip.show();
-        serialDebugMsg("testLedMatrix: Switch Works");
-        // basic.showString("SLIDER OK");
-        // scrollText("SLIDER OK", neopixel.colors(NeoPixelColors.White), 90);
-
-        /* Test Joystick */
-        basic.showString("MOVE JOYSTICK");
-        // scrollText("MOVE JOYSTICK", neopixel.colors(NeoPixelColors.White), 90);
-        serialDebugMsg("testLedMatrix: Start testing LED matrix joystick");
-        /* Set the first pixel to blue during the test. */
-        setPixel(0, 0, colorBlue);
-        strip.show();
-        while (0 !== readJoystick()) {
-            basic.pause(pollingInterval);
-        }
-        serialDebugMsg("testLedMatrix: Joystick NotPressed works");
-        while (1 !== readJoystick()) {
-            basic.pause(pollingInterval);
-        }
-        serialDebugMsg("testLedMatrix: Joystick Center works");
-        while (2 !== readJoystick()) {
-            basic.pause(pollingInterval);
-        }
-        serialDebugMsg("testLedMatrix: Joystick Up works");
-        while (3 !== readJoystick()) {
-            basic.pause(pollingInterval);
-        }
-        serialDebugMsg("testLedMatrix: Joystick Down works");
-        while (4 !== readJoystick()) {
-            basic.pause(pollingInterval);
-        }
-        serialDebugMsg("testLedMatrix: Joystick Right works");
-        while (5 !== readJoystick()) {
-            basic.pause(pollingInterval);
-        }
-        serialDebugMsg("testLedMatrix: Joystick Left works");
-        /* Set the first pixel to green when the test passed. */
-        setPixel(0, 0, colorGreen);
-        strip.show();
-        // basic.showString("JOYSTICK OK");
-        // scrollText("JOYSTICK OK", neopixel.colors(NeoPixelColors.White), 90);
-
-        serialDebugMsg("testLedMatrix: Finished testing LED matrix");
-        basic.showString("ALL OK");
-        clear();
-        scrollText("ALL OK", neopixel.colors(NeoPixelColors.White), 90);
     }
 
 }

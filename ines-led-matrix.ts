@@ -73,12 +73,6 @@ namespace lumaMatrix {
         }
     }
 
-    export function serialDebugMsg(message: string): void {
-        if (debugEnabled) {
-            serial.writeLine(message);
-        }
-    }
-
     function getRandomInt(min: number, max: number): number {
         min = Math.ceil(min);
         max = Math.floor(max);

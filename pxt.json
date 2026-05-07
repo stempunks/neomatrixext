@@ -12,9 +12,7 @@
         "README.md",
         "ines-led-matrix.ts",
         "enums.ts",
-        "matrix-lut.ts",
-        "_locales/de/luma-matrix-strings.json",
-        "_locales/de/luma-matrix-jsdoc-strings.json"
+        "matrix-lut.ts"
     ],
     "targetVersions": {
         "target": "7.0.61",

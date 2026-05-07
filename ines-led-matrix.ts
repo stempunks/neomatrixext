@@ -72,6 +72,7 @@ namespace lumaMatrix {
      * Enable serial messages for debugging printed by the Luma Matrix extension.
      */
     //% blockId="ZHAW_Debug_Enable"
+    //% blockHidden=true
     //% block="set serial debugging prints to $enable"
     //% enable.shadow="toggleOnOff"
     //% advanced=true group="Debug"
@@ -202,11 +203,6 @@ namespace lumaMatrix {
         strip.setBrightness(brightness);
         clear();
         initializeMatrixInterface();
-        control.inBackground(function () {
-            while (true) {
-                calculateCurrentTime();
-            }
-        });
         serialDebugMsg("initializeMatrix: Matrix init on pin: " + pinNeopixels + " with brightness: " + brightness);
     }
 
@@ -231,6 +227,7 @@ namespace lumaMatrix {
      * @param pinLeftButtonTemp is the GPIO pin for the left button of the joystick
      */
     //% blockId="ZHAW_Matrix_InitExpert"
+    //% blockHidden=true
     //% block="customize input pins (expert). \nswitch pin $pinSwitchTemp \ncenter button pin $pinCenterButtonTemp \nup button pin $pinUpButtonTemp \ndown button pin $pinDownButtonTemp \nright button pin $pinRightButtonTemp \nleft button pin $pinLeftButtonTemp"
     //% advanced=true group="Debug"
     export function initializeMatrixInterfaceExpert(
@@ -446,6 +443,7 @@ namespace lumaMatrix {
      * Only bitmap is available without colour information.
      */
     //% blockId="ZHAW_Matrix_GetImageFromCoordinates"
+    //% blockHidden=true
     //% block="image from $pixels"
     //% group="Pixels" weight=106 advanced=true
     export function getImageFromCoordinates(pixels: number[][]): Image {
@@ -488,6 +486,7 @@ namespace lumaMatrix {
      * Get the buffer with stored colours for each pixel. Each pixel uses 3 bytes in order red, green, blue.
      */
     //% blockId="ZHAW_Matrix_GetPixelBuffer"
+    //% blockHidden=true
     //% block="pixel buffer"
     //% group="Pixels" weight=106
     export function getPixelBuffer(): Buffer {
@@ -498,6 +497,7 @@ namespace lumaMatrix {
      * Write a buffer full of colours to the matrix. Color must be split into 3 successive bytes following order red, green, blue.
      */
     //% blockId="ZHAW_Matrix_ApplyPixelBuffer"
+    //% blockHidden=true
     //% block="apply pixel buffer $buf"
     //% buf.shadow="ZHAW_Matrix_GetPixelBuffer"
     //% group="Pixels" weight=106
@@ -538,6 +538,7 @@ namespace lumaMatrix {
      * Get the colour of the pixel at coordinate (x,y)
      */
     //% blockId="ZHAW_Matrix_GetPixelRGB"
+    //% blockHidden=true
     //% block="colour at pixel x $x y $y"
     //% x.min=0 x.max=7 y.min=0 y.max=7
     //% group="Pixels" weight=106
@@ -560,6 +561,7 @@ namespace lumaMatrix {
      * Intensity will not go above 255.
      */
     //% blockId="ZHAW_Matrix_AddPixelRGB"
+    //% blockHidden=true
     //% block="add red $R green $G blue $B to pixel at x $x y $y"
     //% x.min=0 x.max=7 y.min=0 y.max=7
     //% R.min=0 R.max=255 G.min=0 G.max=255 B.min=0 B.max=255
@@ -582,6 +584,7 @@ namespace lumaMatrix {
      * Intensity will not go below 0.
      */
     //% blockId="ZHAW_Matrix_SubtractPixelRGB"
+    //% blockHidden=true
     //% block="subtract red $R green $G blue $B from pixel at x $x y $y"
     //% x.min=0 x.max=7 y.min=0 y.max=7
     //% R.min=0 R.max=255 G.min=0 G.max=255 B.min=0 B.max=255
@@ -1016,6 +1019,7 @@ namespace lumaMatrix {
      * Defined test sequence which checks every aspect of the hardware. 
      */
     //% blockId="ZHAW_Debug_MatrixHardware"
+    //% blockHidden=true
     //% block="test LED matrix hardware"
     //% advanced=true group="Debug"
     export function testLedMatrixHW(): void {

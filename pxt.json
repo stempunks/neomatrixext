@@ -15,13 +15,6 @@
         "matrix-lut.ts",
         "_locales/de/luma-matrix-strings.json",
         "_locales/de/luma-matrix-jsdoc-strings.json",
-        "wordclock.ts",
-        "snake-game.ts",
-        "tetris-mini-game.ts",
-        "rf-messages.ts"
-    ],
-    "testFiles": [
-        "test.ts"
     ],
     "targetVersions": {
         "target": "7.0.61",

@@ -1,6 +1,6 @@
 {
     "name": "Neo Matrix",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "Extension for Neopixel 8x8 Matrix",
     "license": "MIT",
     "dependencies": {
@@ -14,7 +14,7 @@
         "enums.ts",
         "matrix-lut.ts",
         "_locales/de/luma-matrix-strings.json",
-        "_locales/de/luma-matrix-jsdoc-strings.json",
+        "_locales/de/luma-matrix-jsdoc-strings.json"
     ],
     "targetVersions": {
         "target": "7.0.61",

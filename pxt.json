@@ -1,6 +1,6 @@
 {
     "name": "Neo Matrix CLEAN TEST",
-    "version": "0.1.4"
+    "version": "0.1.4",
     "description": "Extension for Neopixel 8x8 Matrix",
     "license": "MIT",
     "dependencies": {

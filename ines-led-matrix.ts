@@ -30,7 +30,7 @@ namespace lumaMatrix {
     let pinSwitch: DigitalPin = DigitalPin.P16;
     let pinCenterButton: DigitalPin = DigitalPin.P2;
     let pinUpButton: DigitalPin = DigitalPin.P9;
-    let pinDownButton: DigitalPin = DigitalPin.P2;
+    let pinDownButton: DigitalPin = DigitalPin.P13;
     let pinRightButton: DigitalPin = DigitalPin.P7;
     let pinLeftButton: DigitalPin = DigitalPin.P12;
     let lastSwitchValue = readSwitch(); // used for switchValueChanged

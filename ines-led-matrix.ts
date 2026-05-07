@@ -68,6 +68,12 @@ namespace lumaMatrix {
     }
 
     export function serialDebugMsg(message: string): void {
+    if (debugEnabled) {
+        serial.writeLine(message);
+        }
+    }
+
+    export function serialDebugMsg(message: string): void {
         if (debugEnabled) {
             serial.writeLine(message);
         }
@@ -698,7 +704,6 @@ namespace lumaMatrix {
         output = [];
         charData = [];
         charMatrix = [];
-        counter += 1;
         //serialDebugMsg("getTextArray: Number of Executions: " + counter);
 
         /* Create binary array of each */
